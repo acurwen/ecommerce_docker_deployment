@@ -543,7 +543,7 @@ resource "aws_security_group" "sg_ecomm_app" { # name that terraform recognizes
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"] # allowing IPs only from public subnet (RIGHT?)
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   ingress {
@@ -551,7 +551,7 @@ resource "aws_security_group" "sg_ecomm_app" { # name that terraform recognizes
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -559,7 +559,7 @@ resource "aws_security_group" "sg_ecomm_app" { # name that terraform recognizes
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -665,8 +665,13 @@ resource "aws_instance" "ecommerce_app_az1" {
     "Name" = "ecommerce_app_az1"  
     "Terraform" = "true"       
   }
+ 
+   depends_on = [
+    aws_key_pair.ecommkey,
+    aws_db_instance.postgres_db,
+    aws_nat_gateway.nat1
+  ]
 
-   depends_on = [aws_key_pair.ecommkey]  # Ensure key pair is created first EDIT!!
 }
 
 output "ecommerce_app1_privateip" {
@@ -701,6 +706,12 @@ resource "aws_instance" "ecommerce_app_az2" {
     "Name" = "ecommerce_app_az2"  
     "Terraform" = "true"       
   }
+
+  depends_on = [
+    aws_key_pair.ecommkey,
+    aws_db_instance.postgres_db,
+    aws_nat_gateway.nat2
+  ]
 }
 
 output "ecommerce_app2_privateip" {
