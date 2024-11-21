@@ -10,19 +10,20 @@ pipeline {
       agent any
       steps {
         sh '''#!/bin/bash
-        <code to build the application>
+        python3.9 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r backend/requirements.txt
         '''
       }
     }
 
     stage ('Test') {
       agent any
-      steps {
+      steps { 
         sh '''#!/bin/bash
-        <code to activate virtual environment>
+        source venv/bin/activate
         pip install pytest-django
-        python backend/manage.py makemigrations
-        python backend/manage.py migrate
         pytest backend/account/tests.py --verbose --junit-xml test-reports/results.xml
         ''' 
       }
@@ -48,14 +49,14 @@ pipeline {
         
         // Build and push backend
         sh '''
-          docker build -t <backend image tagged for dockerhub>:latest -f Dockerfile.backend .
-          docker push <backend image tagged for dockerhub:latest
+          docker build -t yanwen1/ecommerce_backend:latest -f Dockerfile.backend .
+          docker push yanwen1/ecommerce_backend:latest
         '''
         
         // Build and push frontend
         sh '''
-          docker build -t <frontent image tagged for dockerhub>:latest -f Dockerfile.frontend .
-          docker push <frontend image tagged for dockerhub>:latest
+          docker build -t yanwen1/ecommerce_frontend:latest -f Dockerfile.frontend .
+          docker push yanwen1/ecommerce_frontend:latest
         '''
       }
     }
